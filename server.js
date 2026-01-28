@@ -13,7 +13,7 @@ app.post('/api/chat', async (req, res) => {
   try {
     const { message, language = 'de' } = req.body;
     
-    const PPLX_API_KEY = process.env.PERPLEXITY_API_KEY;
+    const PPLX_API_KEY = process.env.PERPLEXITY_API_KEY || 'ein_dummy_key_zum_testen';
     
     const prompt = language === 'de' 
       ? `SHIPNEX24 Assistent (Fulfillment München). Preise: 4,50€ Regale, 0,25€ Lager. Ende mit "Möchten Sie ein Angebot?" Frage: ${message}`
