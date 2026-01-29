@@ -38,3 +38,22 @@ In hPanel, find **Environment Variables** and add content from `.env.example`:
 ## 5. Cron Jobs
 - Setup cron in hPanel or rely on built-in cron (if process stays alive).
 - Command: `curl -X POST https://api.shipnex24.com/api/internal/maintenance -H "x-internal-secret: ..."` (Optional alternative)
+
+## Option B: Manual Upload (If Git/NPM fails on server)
+If you cannot run `npm install` on Hostinger:
+
+1. **Prepare Locally**:
+   - Delete your local `node_modules` folder.
+   - Run `npm install --production` (installs only necessary files).
+   - Create a ZIP file of the entire `Shipnex24` folder (including `node_modules`, `src`, `server.js`, but **exclude** `.git`).
+
+2. **Upload**:
+   - Go to Hostinger File Manager.
+   - Upload the ZIP file to `public_html` (or your app directory).
+   - Right-click > Extract.
+
+3. **Check Config**:
+   - Ensure `.htaccess` and `.env` are present (create `.env` manually if needed).
+
+4. **Start**:
+   - Go to hPanel > Node.js > Restart.
