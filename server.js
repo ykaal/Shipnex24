@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -5,13 +6,12 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const stripeWebhook = require('./src/controllers/stripeWebhook');
 const logger = require('./src/utils/logger');
-require('dotenv').config();
 
 const app = express();
 
 // Security Middleware
 app.use(helmet());
-app.use(cors({ origin: ['https://shipnex24.com', 'http://localhost:3000'] }));
+app.use(cors({ origin: ['https://shipnex24.com', 'https://login.shipnex24.com', 'http://localhost:5173'] }));
 app.use(compression());
 
 // Rate Limiting
@@ -28,11 +28,32 @@ app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), stri
 app.use(express.json());
 
 // Routes
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'shipnex24-backend' });
+app.get('/api/health', async (req, res) => {
+  let dbStatus = 'waiting';
+  try {
+    const supabase = require('./src/config/database');
+    const { data, error } = await supabase.from('client_shops').select('count', { count: 'exact', head: true });
+    dbStatus = error ? 'error' : 'connected';
+  } catch (e) {
+    dbStatus = 'disconnected';
+  }
+
+  res.json({
+    status: 'ok',
+    service: 'shipnex24-backend',
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
 });
 
-// app.use('/api/internal/create-shop', require('./src/controllers/shopCreation'));
+app.use('/api/internal/create-shop', require('./src/controllers/shopCreation').triggerShopCreation);
+
+// Customer Dashboard Routes
+const aiController = require('./src/controllers/aiController');
+const billingController = require('./src/controllers/billingController');
+
+app.post('/api/ai/chat', aiController.getAIResponse);
+app.post('/api/billing/portal', billingController.createPortalSession);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

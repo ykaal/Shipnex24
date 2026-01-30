@@ -1,59 +1,36 @@
-# Deployment Guide
+# Deployment Guide (Subdomain Strategy)
 
-## 1. Hostinger Setup
-1. Go to **hPanel > Websites > Add Website**.
-2. Select **Node.js** as the platform.
-3. Configure settings:
-   - **Node Version**: 18.x
-   - **Application Entry**: `server.js`
-   - **Domain**: `api.shipnex24.com` (or your subdomain)
+Die beste Lösung für ShipNex24 ist eine saubere Trennung der Bereiche. Das ist sicher, professionell und einfach zu skalieren.
 
-## 2. Environment Variables
-In hPanel, find **Environment Variables** and add content from `.env.example`:
-- `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`
-- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
-- `INTERNAL_API_SECRET`
-- SMTP credentials
+## Ziel-Architektur
+- **`shipnex24.com`**: Deine Hauptseite (WordPress/Landingpage).
+- **`api.shipnex24.com`**: Das Backend (Node.js Server).
+- **`login.shipnex24.com`**: Das Kunden-Dashboard (React App).
 
-## 3. Deploy Code
-1. SSH into your Hostinger instance.
-2. Clone repo:
+---
+
+## 1. Backend Deployment (api.shipnex24.com)
+1. **Hostinger Setup**: Website als **Node.js** App unter dem Subdomain `api.shipnex24.com` anlegen.
+2. **Environment**: Alle Variablen aus der `.env` im hPanel unter "Environment Variables" eintragen.
+3. **Entry Point**: `server.js`.
+
+## 2. Dashboard Deployment (login.shipnex24.com)
+Das Dashboard ist eine React-App und wird "gebuildet", bevor es hochgeladen wird.
+1. **Build lokal erstellen**:
    ```bash
-   git clone https://github.com/ykaal/Shipnex24.git ./backend_app
+   cd dashboard
+   npm run build
    ```
-3. Install & Build:
-   ```bash
-   cd backend_app
-   npm install --production
-   ```
-4. Start (hPanel handles restart):
-   ```bash
-   npm start
-   ```
+2. **Upload**: Den Inhalt des neu erstellten `dashboard/dist` Ordners per FTP/File Manager in das Verzeichnis von `login.shipnex24.com` (meist `public_html`) hochladen.
+3. **.htaccess**: Sicherstellen, dass die `.htaccess` Datei vorhanden ist, damit React-Routing funktioniert.
 
-## 4. Stripe Webhook
-- URL: `https://api.shipnex24.com/api/webhooks/stripe`
-- Events: `checkout.session.completed`
+## 3. Verlinkung
+- In der Hauptseite (WordPress) verlinkst du den Login-Button auf `https://login.shipnex24.com/login`.
+- Im Dashboard sind die API-Requests bereits auf `api.shipnex24.com` gerichtet.
 
-## 5. Cron Jobs
-- Setup cron in hPanel or rely on built-in cron (if process stays alive).
-- Command: `curl -X POST https://api.shipnex24.com/api/internal/maintenance -H "x-internal-secret: ..."` (Optional alternative)
+---
 
-## Option B: Manual Upload (If Git/NPM fails on server)
-If you cannot run `npm install` on Hostinger:
-
-1. **Prepare Locally**:
-   - Delete your local `node_modules` folder.
-   - Run `npm install --production` (installs only necessary files).
-   - Create a ZIP file of the entire `Shipnex24` folder (including `node_modules`, `src`, `server.js`, but **exclude** `.git`).
-
-2. **Upload**:
-   - Go to Hostinger File Manager.
-   - Upload the ZIP file to `public_html` (or your app directory).
-   - Right-click > Extract.
-
-3. **Check Config**:
-   - Ensure `.htaccess` and `.env` are present (create `.env` manually if needed).
-
-4. **Start**:
-   - Go to hPanel > Node.js > Restart.
+## Nächste Schritte
+1. [ ] Subdomains im Hostinger hPanel anlegen.
+2. [ ] Backend-Dateien hochladen.
+3. [ ] Dashboard builden und hochladen.

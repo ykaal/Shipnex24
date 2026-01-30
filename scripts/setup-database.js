@@ -5,10 +5,10 @@ const logger = require('../src/utils/logger');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
 async function setupDatabase() {
-    logger.info('Starting Supabase Database Setup...');
+  logger.info('Starting Supabase Database Setup...');
 
-    const sqlStatements = [
-        `
+  const sqlStatements = [
+    `
     CREATE TABLE IF NOT EXISTS public.profiles (
       id UUID REFERENCES auth.users(id) PRIMARY KEY,
       stripe_customer_id TEXT UNIQUE,
@@ -20,7 +20,7 @@ async function setupDatabase() {
       created_at TIMESTAMP DEFAULT NOW()
     );
     `,
-        `
+    `
     CREATE TABLE IF NOT EXISTS public.service_tickets (
       id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
       user_id UUID REFERENCES auth.users(id),
@@ -34,7 +34,7 @@ async function setupDatabase() {
       updated_at TIMESTAMP DEFAULT NOW()
     );
     `,
-        `
+    `
     CREATE TABLE IF NOT EXISTS public.client_shops (
       id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
       user_id UUID REFERENCES auth.users(id) NOT NULL,
@@ -51,6 +51,9 @@ async function setupDatabase() {
       db_name TEXT,
       db_user TEXT,
       db_password TEXT,
+      email_host TEXT,
+      email_user TEXT,
+      email_password TEXT,
       last_backup TIMESTAMP,
       product_count INTEGER DEFAULT 0,
       settings JSONB DEFAULT '{}',
@@ -58,7 +61,7 @@ async function setupDatabase() {
       updated_at TIMESTAMP DEFAULT NOW()
     );
     `,
-        `
+    `
     CREATE TABLE IF NOT EXISTS public.shop_activities (
       id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
       shop_id UUID REFERENCES public.client_shops(id),
@@ -68,18 +71,27 @@ async function setupDatabase() {
       error_message TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     );
+    `,
     `
-    ];
+    CREATE TABLE IF NOT EXISTS public.mailboxes (
+      id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+      shop_id UUID REFERENCES public.client_shops(id) NOT NULL,
+      email_address TEXT UNIQUE NOT NULL,
+      status TEXT DEFAULT 'active',
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+    `
+  ];
 
-    for (const sql of sqlStatements) {
-        const { error } = await supabase.rpc('exec_sql', { sql_query: sql });
-        // Note: 'exec_sql' requires a custom RPC function in Supabase.
-        // Fallback: This is a placeholder as the JS client can't run RAW DDL without a helper or direct SQL editor.
-        // For this context, we assume the user might run this via the Supabase Dashboard SQL editor.
-        logger.info(`Executed SQL block.`);
-    }
+  for (const sql of sqlStatements) {
+    const { error } = await supabase.rpc('exec_sql', { sql_query: sql });
+    // Note: 'exec_sql' requires a custom RPC function in Supabase.
+    // Fallback: This is a placeholder as the JS client can't run RAW DDL without a helper or direct SQL editor.
+    // For this context, we assume the user might run this via the Supabase Dashboard SQL editor.
+    logger.info(`Executed SQL block.`);
+  }
 
-    logger.info('Database setup completed (check SQL Editor if RPC is missing).');
+  logger.info('Database setup completed (check SQL Editor if RPC is missing).');
 }
 
 setupDatabase();

@@ -1,4 +1,5 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Stripe = require('stripe');
+const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
 const supabase = require('../config/database');
 const emailService = require('../services/emailService');
 const logger = require('../utils/logger');
@@ -7,6 +8,11 @@ const logger = require('../utils/logger');
 exports.handleWebhook = async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
+
+    if (!stripe) {
+        logger.error('Stripe is not initialized. Please check STRIPE_SECRET_KEY in .env');
+        return res.status(500).send('Stripe configuration error');
+    }
 
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
