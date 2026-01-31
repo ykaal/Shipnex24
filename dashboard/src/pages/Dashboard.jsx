@@ -106,7 +106,7 @@ const Dashboard = () => {
                         <h1 className="card-title">Willkommen, {user?.email}</h1>
                         <p style={{ color: 'var(--text-muted)' }}>Hier ist der Überblick über Ihre aktuellen Projekte.</p>
                     </div>
-                    <button className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button onClick={() => window.location.href = 'https://shipnex24.com'} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         Neuen Shop buchen
                     </button>
                 </header>
@@ -116,9 +116,9 @@ const Dashboard = () => {
                         <motion.div key={shop.id} whileHover={{ y: -5 }} className="glass" style={{ padding: '24px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                                 <div>
-                                    <h3 style={{ fontSize: '1.125rem', marginBottom: '4px' }}>{shop.domain}</h3>
+                                    <h3 style={{ fontSize: '1.125rem', marginBottom: '4px' }}>{shop.domain || shop.shop_name}</h3>
                                     <span style={{ fontSize: '0.75rem', padding: '4px 8px', borderRadius: '20px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', fontWeight: 600 }}>
-                                        {shop.status.toUpperCase()}
+                                        {(shop.status || 'ACTIVE').toUpperCase()}
                                     </span>
                                 </div>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '50%' }}>
@@ -129,7 +129,7 @@ const Dashboard = () => {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
                                     <span style={{ color: 'var(--text-muted)' }}>WordPress:</span>
-                                    <a href={shop.admin_url} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <a href={shop.admin_url || `${shop.wp_url || '#'}/wp-admin`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                         Admin öffnen <ExternalLink size={14} />
                                     </a>
                                 </div>
@@ -146,7 +146,7 @@ const Dashboard = () => {
                     )) : (
                         <div className="glass" style={{ gridColumn: '1 / -1', padding: '60px', textAlign: 'center' }}>
                             <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>Bisher wurden noch keine Shops erstellt.</p>
-                            <button className="btn-primary">Jetzt starten</button>
+                            <button onClick={() => window.location.href = 'https://shipnex24.com'} className="btn-primary">Jetzt starten</button>
                         </div>
                     )}
                 </div>
