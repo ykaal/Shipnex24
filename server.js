@@ -71,8 +71,11 @@ app.post('/api/ai/chat', aiController.getAIResponse);
 app.post('/api/billing/portal', billingController.createPortalSession);
 
 // Serve Static Frontend Files
-app.use(express.static(path.join(__dirname, '.')));
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+const root = path.resolve(__dirname);
+app.use(express.static(root));
+app.use('/assets', express.static(path.join(root, 'assets')));
+
+logger.info(`Static files being served from: ${root}`);
 
 // Explicitly serve index.html for the root path
 app.get('/', (req, res) => {
