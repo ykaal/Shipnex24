@@ -48,7 +48,7 @@ const Dashboard = () => {
                 .single();
 
             if (profile?.stripe_customer_id) {
-                const response = await fetch('https://api.shipnex24.com/api/billing/portal', {
+                const response = await fetch('/api/billing/portal', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ customerId: profile.stripe_customer_id })

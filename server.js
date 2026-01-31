@@ -3,11 +3,16 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
+const path = require('path');
 const rateLimit = require('express-rate-limit');
 const stripeWebhook = require('./src/controllers/stripeWebhook');
 const logger = require('./src/utils/logger');
 
 const app = express();
+
+logger.info(`Server starting...`);
+logger.info(`Current directory (__dirname): ${__dirname}`);
+logger.info(`Checking index.html in ${__dirname}: ${require('fs').existsSync(path.join(__dirname, 'index.html'))}`);
 
 // Security Middleware
 app.use(helmet());
@@ -46,6 +51,16 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
+app.get('/api/debug-files', (req, res) => {
+  const fs = require('fs');
+  const files = fs.readdirSync(__dirname);
+  res.json({
+    dirname: __dirname,
+    files: files,
+    existsIndex: fs.existsSync(path.join(__dirname, 'index.html'))
+  });
+});
+
 app.use('/api/internal/create-shop', require('./src/controllers/shopCreation').triggerShopCreation);
 
 // Customer Dashboard Routes
@@ -54,6 +69,22 @@ const billingController = require('./src/controllers/billingController');
 
 app.post('/api/ai/chat', aiController.getAIResponse);
 app.post('/api/billing/portal', billingController.createPortalSession);
+
+// Serve Static Frontend Files
+app.use(express.static(path.join(__dirname, '.')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+// Explicitly serve index.html for the root path
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Handle React Router - Serve index.html for any non-API routes
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api/')) {
+    res.sendFile(path.join(__dirname, 'index.html'));
+  }
+});
 
 // Global Error Handler
 app.use((err, req, res, next) => {
