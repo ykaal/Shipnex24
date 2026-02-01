@@ -67,6 +67,12 @@ const billingController = require('./src/controllers/billingController');
 app.post('/api/ai/chat', aiController.getAIResponse);
 app.post('/api/billing/portal', billingController.createPortalSession);
 
+// Admin Routes
+const adminController = require('./src/controllers/adminController');
+app.get('/api/admin/shops', adminController.getAllShops);
+app.post('/api/admin/simulate', adminController.simulateShopCreation);
+app.get('/api/admin/health', adminController.getPlatformHealth);
+
 // Serve Static Frontend Files
 const rootDir = path.resolve(__dirname);
 app.use(express.static(rootDir));
