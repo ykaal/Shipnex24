@@ -3,7 +3,7 @@ const logger = require('../utils/logger');
 
 // Access your API key as an environment variable (see "Set up your API key" above)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
 exports.getAIResponse = async (req, res) => {
     const { message, context } = req.body;

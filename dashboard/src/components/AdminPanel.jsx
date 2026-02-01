@@ -24,10 +24,13 @@ const AdminPanel = () => {
             const shopsData = await shopsRes.json();
             const healthData = await healthRes.json();
 
-            setAllShops(shopsData);
+            // Ensure shopsData is an array to avoid crashes
+            setAllShops(Array.isArray(shopsData) ? shopsData : []);
             setHealth(healthData);
+            console.log('Admin Data loaded:', { shopsData, healthData });
         } catch (err) {
             console.error('Admin Fetch Error:', err);
+            setAllShops([]); // Reset to empty array on error
         }
         setLoading(false);
     };
@@ -45,11 +48,11 @@ const AdminPanel = () => {
                 })
             });
             const data = await res.json();
-            if (data.success) {
+            if (data && data.success) {
                 alert('Simulation erfolgreich gestartet!');
                 fetchData();
             } else {
-                alert('Fehler: ' + data.details);
+                alert('Fehler: ' + (data?.details || 'Unbekannter Fehler'));
             }
         } catch (err) {
             alert('Simulation fehlgeschlagen: ' + err.message);
@@ -57,10 +60,19 @@ const AdminPanel = () => {
         setSimulating(false);
     };
 
-    const filteredShops = allShops.filter(shop =>
-        shop.domain?.toLowerCase().includes(filter.toLowerCase()) ||
-        shop.user_id?.toLowerCase().includes(filter.toLowerCase())
-    );
+    const filteredShops = Array.isArray(allShops) ? allShops.filter(shop =>
+        shop?.domain?.toLowerCase().includes(filter.toLowerCase()) ||
+        shop?.user_id?.toLowerCase().includes(filter.toLowerCase())
+    ) : [];
+
+    if (loading && allShops.length === 0) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '400px', gap: '20px' }}>
+                <RefreshCw className="animate-spin" size={48} color="var(--primary)" />
+                <p style={{ color: 'var(--text-muted)' }}>Lade Admin-Daten...</p>
+            </div>
+        );
+    }
 
     return (
         <div style={{ color: 'var(--text)' }}>
