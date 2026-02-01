@@ -9,11 +9,15 @@ exports.getAIResponse = async (req, res) => {
     const { message, context } = req.body;
 
     try {
-        logger.info(`AI Assistant processing message with Gemini: ${message}`);
+        logger.info(`AI Request: "${message}"`);
 
-        if (!process.env.GEMINI_API_KEY) {
-            throw new Error("GEMINI_API_KEY is missing in .env");
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            logger.error('CRITICAL: GEMINI_API_KEY is missing!');
+            return res.status(500).json({ error: 'AI Config Error', details: 'Missing API Key' });
         }
+
+        logger.info(`Using Gemini API Key (Prefix): ${apiKey.substring(0, 10)}...`);
 
         const prompt = `
             Du bist ein hilfreicher KI-Assistent für das Projekt "ShipNex24". 
@@ -39,6 +43,7 @@ exports.getAIResponse = async (req, res) => {
             reply: reply,
             suggestion: suggestion
         });
+        logger.info('AI Response sent successfully.');
     } catch (err) {
         logger.error('Gemini AI Assistant Error', err);
         res.status(500).json({

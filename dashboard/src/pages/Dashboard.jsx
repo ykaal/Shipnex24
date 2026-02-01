@@ -29,13 +29,19 @@ const Dashboard = () => {
     }, [navigate]);
 
     const fetchProfile = async (userId) => {
+        console.log('Fetching profile for:', userId);
         const { data, error } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', userId)
             .single();
 
-        if (!error) setProfile(data);
+        if (error) {
+            console.error('Profile Fetch Error:', error);
+        } else {
+            console.log('Profile Loaded:', data);
+            setProfile(data);
+        }
     };
 
     const fetchShops = async (userId) => {
