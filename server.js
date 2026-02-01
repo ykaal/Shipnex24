@@ -91,7 +91,13 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  logger.info(`🚀 ShipNex24 Automator running on port ${PORT}`);
-});
+// Export app for Passenger
+module.exports = app;
+
+// Only start server if not running under Passenger
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    logger.info(`🚀 ShipNex24 Automator running on port ${PORT}`);
+  });
+}

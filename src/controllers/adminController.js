@@ -11,13 +11,7 @@ exports.getAllShops = async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('client_shops')
-            .select(`
-                *,
-                profiles (
-                    full_name,
-                    email
-                )
-            `)
+            .select('*')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
