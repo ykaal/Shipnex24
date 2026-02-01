@@ -31,7 +31,9 @@ exports.triggerShopCreation = async (req, res) => {
         if (error) throw error;
 
         // 4. Start Async Process (Fire & Forget Response)
-        runAsyncCreation(shop.id, finalDomain, req.body.email);
+        runAsyncCreation(shop.id, finalDomain, req.body.email).catch(err => {
+            logger.error(`FATAL: runAsyncCreation failed unexpectedly for ${finalDomain}`, err);
+        });
 
         res.json({ status: 'started', shopId: shop.id, domain: finalDomain });
     } catch (err) {

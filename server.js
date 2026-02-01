@@ -1,18 +1,25 @@
 require('dotenv').config();
+const logger = require('./src/utils/logger');
+
+// Global Error Handlers
+process.on('uncaughtException', (err) => {
+  logger.error('CRITICAL: Uncaught Exception:', err);
+  setTimeout(() => process.exit(1), 1000);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('CRITICAL: Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
-const path = require('path');
 const rateLimit = require('express-rate-limit');
 const stripeWebhook = require('./src/controllers/stripeWebhook');
-const logger = require('./src/utils/logger');
+const path = require('path');
 
 const app = express();
-
-logger.info(`Server starting...`);
-logger.info(`Current directory (__dirname): ${__dirname}`);
-logger.info(`Checking index.html in ${__dirname}: ${require('fs').existsSync(path.join(__dirname, 'index.html'))}`);
 
 // Security Middleware
 app.use(helmet());
@@ -51,16 +58,6 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
-app.get('/api/debug-files', (req, res) => {
-  const fs = require('fs');
-  const files = fs.readdirSync(__dirname);
-  res.json({
-    dirname: __dirname,
-    files: files,
-    existsIndex: fs.existsSync(path.join(__dirname, 'index.html'))
-  });
-});
-
 app.use('/api/internal/create-shop', require('./src/controllers/shopCreation').triggerShopCreation);
 
 // Customer Dashboard Routes
@@ -71,21 +68,14 @@ app.post('/api/ai/chat', aiController.getAIResponse);
 app.post('/api/billing/portal', billingController.createPortalSession);
 
 // Serve Static Frontend Files
-const root = path.resolve(__dirname);
-app.use(express.static(root));
-app.use('/assets', express.static(path.join(root, 'assets')));
-
-logger.info(`Static files being served from: ${root}`);
-
-// Explicitly serve index.html for the root path
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+const rootDir = path.resolve(__dirname);
+app.use(express.static(rootDir));
+app.use('/assets', express.static(path.join(rootDir, 'assets')));
 
 // Handle React Router - Serve index.html for any non-API routes
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api/')) {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(rootDir, 'index.html'));
   }
 });
 
