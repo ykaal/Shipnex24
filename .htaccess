@@ -1,23 +1,18 @@
-# Enable proxy modules (if available)
-<IfModule mod_proxy.c>
-  ProxyPreserveHost On
-  ProxyPass /api http://localhost:3000/api
-  ProxyPassReverse /api http://localhost:3000/api
-</IfModule>
+# Enable rewriting
+RewriteEngine On
+RewriteBase /
 
-# Fallback: Standard SPA rewrite
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  
-  # Serve static files directly
-  RewriteCond %{REQUEST_FILENAME} -f
-  RewriteRule ^ - [L]
-  
-  # Serve directories directly
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule ^ - [L]
-  
-  # Everything else goes to index.html (SPA)
-  RewriteRule ^ /index.html [L]
-</IfModule>
+# Forward all /api/* requests to PHP proxy
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteRule ^api/(.*)$ /api-proxy.php [L,QSA]
+
+# Serve static files directly
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Serve directories directly  
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Everything else goes to index.html (SPA)
+RewriteRule ^ /index.html [L]

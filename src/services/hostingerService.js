@@ -20,18 +20,16 @@ class HostingerService {
             // Simulation of Hostinger API call
             // In a real scenario, this would be an axios.post to their endpoint
 
-            /*
-            await axios.post(`${this.apiUrl}/emails`, {
+            const response = await axios.post(`${this.apiUrl}/emails`, {
                 domain,
                 email,
                 password
             }, {
                 headers: { 'Authorization': `Bearer ${this.apiKey}` }
             });
-            */
 
-            logger.info(`Mailbox ${email} created successfully (Simulated).`);
-            return { success: true, email };
+            logger.info(`Mailbox ${email} created successfully via Hostinger API.`);
+            return { success: true, email, data: response.data };
         } catch (err) {
             logger.error(`Failed to create mailbox ${email}`, err);
             throw err;

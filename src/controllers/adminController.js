@@ -1,6 +1,7 @@
 const supabase = require('../config/database');
 const logger = require('../utils/logger');
 const axios = require('axios');
+const crypto = require('crypto');
 
 /**
  * Admin Controller for platform management
@@ -31,7 +32,22 @@ exports.simulateShopCreation = async (req, res) => {
 
         // This simulates the internal API call that would normally come from the simulation script
         // but now triggered directly from the UI.
+        // Lookup or Create User for Simulation
+        let { data: user } = await supabase.from('profiles').select('id').eq('email', email).single();
+
+        if (!user) {
+            logger.info(`Admin: Creating temporary user for simulation testing: ${email}`);
+            // In a real scenario you might want to use Auth Admin API, but here we just insert into profiles if possible
+            // OR we use a known test user ID.
+            // For now, let's assume we can insert a profile or use a fallback UUID if tables allow.
+            // Fallback: Generate a random UUID using Node.js crypto
+            user = { id: crypto.randomUUID() };
+        }
+
+        logger.info(`Admin: Sending Shop Creation Request with UserID: ${user.id}`);
+
         const response = await axios.post(`http://localhost:${process.env.PORT || 3000}/api/internal/create-shop`, {
+            userId: user.id, // PASS THE USER ID
             email,
             domainRequest: domain,
             packageType: packageType || 'business'
@@ -46,7 +62,7 @@ exports.simulateShopCreation = async (req, res) => {
     } catch (err) {
         logger.error('Admin: Simulation failed', err.response ? err.response.data : err.message);
         res.status(500).json({
-            error: 'Simulation failed',
+            error: 'Simulation failed (DEBUG v2)',
             details: err.response ? err.response.data : err.message,
             tip: 'Check if INTERNAL_API_SECRET matches in .env'
         });

@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Globe, ExternalLink, Mail, CreditCard, LogOut, Loader2 } from 'lucide-react';
+import { LayoutDashboard, Globe, ExternalLink, Mail, CreditCard, LogOut, Loader2, Sparkles, TrendingUp, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AIAssistant from '../components/AIAssistant';
 import AdminPanel from '../components/AdminPanel';
+// New Business Suite Components
+import DomainTools from '../components/DomainTools';
+import SeoTools from '../components/SeoTools';
+import MarketingTools from '../components/MarketingTools';
 
 const Dashboard = () => {
     const [user, setUser] = useState(null);
     const [profile, setProfile] = useState(null);
     const [shops, setShops] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeView, setActiveView] = useState('shops'); // 'shops' or 'admin'
+    const [activeView, setActiveView] = useState('shops'); // shops | admin | domain | seo | marketing
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -107,8 +111,35 @@ const Dashboard = () => {
                         onClick={() => setActiveView('shops')}
                         style={{ background: activeView === 'shops' ? 'rgba(99, 102, 241, 0.1)' : 'none', color: activeView === 'shops' ? 'var(--primary)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer' }}
                     >
-                        <Globe size={18} /> Meine Shops
+                        <Globe size={18} /> Overview
                     </div>
+
+                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '8px 0' }}></div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', paddingLeft: '16px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Business Suite</span>
+
+                    <div
+                        onClick={() => setActiveView('domain')}
+                        style={{ background: activeView === 'domain' ? 'rgba(99, 102, 241, 0.1)' : 'none', color: activeView === 'domain' ? 'var(--primary)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                        <Search size={18} /> Domain Intelligence
+                    </div>
+
+                    <div
+                        onClick={() => setActiveView('seo')}
+                        style={{ background: activeView === 'seo' ? 'rgba(99, 102, 241, 0.1)' : 'none', color: activeView === 'seo' ? 'var(--primary)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                        <TrendingUp size={18} /> SEO Suite
+                    </div>
+
+                    <div
+                        onClick={() => setActiveView('marketing')}
+                        style={{ background: activeView === 'marketing' ? 'rgba(99, 102, 241, 0.1)' : 'none', color: activeView === 'marketing' ? 'var(--primary)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                        <Sparkles size={18} /> Marketing Engine
+                    </div>
+
+                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '8px 0' }}></div>
+
                     {profile?.role === 'admin' && (
                         <div
                             onClick={() => setActiveView('admin')}
@@ -132,9 +163,13 @@ const Dashboard = () => {
 
             {/* Main Content */}
             <div style={{ flex: 1, padding: '40px 40px 40px 10px', overflowY: 'auto' }}>
-                {activeView === 'admin' ? (
-                    <AdminPanel />
-                ) : (
+                {activeView === 'admin' && <AdminPanel />}
+
+                {activeView === 'domain' && <DomainTools />}
+                {activeView === 'seo' && <SeoTools />}
+                {activeView === 'marketing' && <MarketingTools />}
+
+                {activeView === 'shops' && (
                     <>
                         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
                             <div>

@@ -69,6 +69,32 @@ app.post('/api/billing/portal', billingController.createPortalSession);
 
 // Admin Routes
 const adminController = require('./src/controllers/adminController');
+// Domain Intelligence Routes
+const domainController = require('./src/controllers/domainController');
+const shopCreation = require('./src/controllers/shopCreation');
+const seoController = require('./src/controllers/seoController');
+
+// --- Routes ---
+
+// Domain Intelligence Routes
+app.post('/api/domain/check', domainController.checkAvailability);
+app.post('/api/domain/whois', domainController.getWhois);
+app.post('/api/domain/generate', domainController.generateIdeas);
+
+// SEO Suite Routes
+app.post('/api/seo/generate', seoController.generateMetaTags);
+app.post('/api/seo/audit', seoController.auditContent);
+app.post('/api/seo/keywords', seoController.keywordResearch);
+
+// Marketing Engine Routes
+const marketingController = require('./src/controllers/marketingController');
+app.post('/api/marketing/leads', marketingController.getLeads);
+app.post('/api/marketing/campaign', marketingController.createCampaign);
+app.post('/api/marketing/competitor', marketingController.analyzeCompetitor);
+
+// Existing Routes
+// Existing Routes
+// app.post('/api/create-shop', shopCreation.createShop); // Removed: undefined method
 app.get('/api/admin/shops', adminController.getAllShops);
 app.post('/api/admin/simulate', adminController.simulateShopCreation);
 app.get('/api/admin/health', adminController.getPlatformHealth);

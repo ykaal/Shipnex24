@@ -18,29 +18,41 @@ ShipNex24 ist modular aufgebaut, um maximale Skalierbarkeit zu gewährleisten:
     - Postfächer via `hostingerService.js` anlegen.
 3.  **Onboarding**: Automatisierte E-Mail an den Kunden mit Zugangsdaten.
 
-## 3. Dokumentierte Komponenten
-- **Auth**: Supabase Auth (Email/Passwort). JWT für interne Sicherheit.
-- **AI Assistant**: `aiController.js` (Backend) & `AIAssistant.jsx` (Frontend). Aktuell Mock-Daten, bereit für Gemini/OpenAI Integration.
-- **Billing**: Stripe Billing Portal Integration via `billingController.js`.
-- **Mailing**: `hostingerService.js` (Simuliert). Nächster Schritt: Echte API-Anbindung.
+## 3. Business Suite (The Mega-Upgrade)
+Wir erweitern die Plattform zur ultimativen All-in-One Business Lösung.
 
-## 4. Roadmap für die nächste KI (Next Steps)
-Falls du dieses Projekt übernimmst, hier sind die Prioritäten:
+### A. Domain Intelligence Module
+- **AI Domain Generator**: Kreative Namensfindung basierend auf Nische (powered by Gemini).
+- **Availability Checker**: Echtzeit-Prüfung (Simuliert/API).
+- **WHOIS Lookup**: Inhaber-Daten und Expiry-Dates.
 
-### Phase 1: Produktionsreife
-- [ ] **Hostinger API**: Die Funktionen in `src/services/hostingerService.js` von Simulation auf echte API-Requests umstellen.
-- [ ] **AI Model**: In `src/controllers/aiController.js` einen echten API-Key für Gemini oder OpenAI hinterlegen.
-- [ ] **Error Handling**: Zusätzliche Retries für die WordPress-Installation einbauen.
+### B. SEO Suite (AI-Powered)
+- **Meta-Tag Generator**: Erstellt perfekte Title/Descriptions.
+- **Content Audit**: Analysiert Texte auf Lesbarkeit und Keywords.
+- **Keyword Research**: Findet "Low Hanging Fruits" Keywords für Kunden.
 
-### Phase 2: Features
-- [ ] **Shop-Vorlagen**: Auswahl verschiedener WordPress-Templates im Checkout ermöglichen.
-- [ ] **Statistiken**: Umsatz-Charts im Dashboard via Stripe API anzeigen.
-- [ ] **Domain-Anbindung**: Automatisierte DNS-Prüfung für Kunden-Domains.
+### C. Marketing Engine (The "Money Maker")
+- **Lead Generator**: "Apollo-Style" Datenbank-Suche (AI-Simuliert) nach B2B Kontakten.
+- **Cold Email System**: Erstellen und Versenden von Kampagnen.
+- **Competitor Spy**: Analysiert Konkurrenz-Webseiten auf Schwachstellen.
+
+## 4. Roadmap & Status
+
+### Phase 1: Foundation (Live)
+- [x] Hostinger Deployment
+- [x] Stripe Integration
+- [x] Basic AI Chatbot
+
+### Phase 2: Business Suite Implementation (Current Focus)
+- [/] **Planung**: Architektur definiert (Files: `domainController.js`, `seoController.js`, `marketingController.js`).
+- [ ] **Backend Core**: Implementation der Controller und Routen.
+- [ ] **Frontend UI**: Bau der "Glassmorphism" Interfaces für die neuen Tools.
+- [ ] **Launch**: Integration in das User-Dashboard.
 
 ## 5. Wichtige Befehle
 - `npm start`: Startet das Backend (Produktion).
 - `cd dashboard && npm run dev`: Startet das Dashboard (Entwicklung).
-- `cd dashboard && npm run build`: Erstellt das Produktions-Paket für das Dashboard.
+- `node scripts/test-business-suite.js`: Testet die neuen Business-Funktionen (WIP).
 
 ---
-*Dokument erstellt am 30.01.2026 von Antigravity.*
+*Dokument aktualisiert am 01.02.2026 für Mega-Upgrade.*
